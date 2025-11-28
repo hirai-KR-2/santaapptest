@@ -5,8 +5,8 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv()
-SUPABASE_URL = os.environ("SUPABASE_URL")
-SUPABASE_KEY = os.environ("SUPABASE_KEY")
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 #　ダイアログ定義
