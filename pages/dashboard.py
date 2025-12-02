@@ -21,7 +21,7 @@ def registration_dialog():
         if not name.strip():
             st.error("お名前は必須です。")
             return
-        elif not birth_date is None:
+        elif birth_date is None:
             st.error("生年月日は必須です。")
             return
         elif not gender.strip():
