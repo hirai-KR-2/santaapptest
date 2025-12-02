@@ -16,19 +16,11 @@ if "user" not in st.session_state:
     st.stop()
 
 user = st.session_state.user
-
 st.title(f"ようこそ、{user['name']} さん！")
 
-# --------------------------
-# サイドバー
-# --------------------------
+#　サイドバー
 st.sidebar.header("お子さんの選択")
-
-# session_state で「子どもリスト更新フラグ」を管理
-if "child_refresh" not in st.session_state:
-    st.session_state.child_refresh = True
-
-# 子どもリストを取得する関数
+# ユーザー情報に基づきお子さんの情報が登録されているか検索
 def load_children():
     res = (
         supabase.table("childmaster")
@@ -39,11 +31,6 @@ def load_children():
     )
     return res.data or []
 
-# 子どもリストを更新
-if st.session_state.child_refresh:
-    st.session_state.children_list = load_children()
-    st.session_state.child_refresh = False
-
 child_names = [child["name"] for child in st.session_state.children_list]
 
 # プルダウン
@@ -51,52 +38,31 @@ selected_child = st.sidebar.selectbox(
     "お子さんを選択してください",
     child_names if child_names else ["登録されていません"]
 )
+if st.sidebar.button("お子さんを登録する"):
+    st.dialog("お子さんプロフィール登録")
 
-# --------------------------
-# 新規登録ボタン
-# --------------------------
-if st.sidebar.button("新しいお子さんを登録する"):
-    st.dialog("お子さんの新規登録")  # ポップアップ開始
+#ポップアップ
+@st.dialog("新規登録")
+def registration_dialog():
+    name = st.text_input("お名前")
+    birth_date = st.date_input("生年月日")
+    gender = st.selectbox("性別" ,("男の子","女の子","選択しない"))
 
-    # フォーム用 session_state
-    if "new_child_name" not in st.session_state:
-        st.session_state.new_child_name = ""
-        st.session_state.new_child_birth = date.today()
-        st.session_state.new_child_gender = "選択しない"
+    if st.button("アカウント作成"):
+        if not name.strip():
+            st.error("お名前は必須です。")
+            return
+        elif not birth_date.strip():
+            st.error("生年月日は必須です。")
+            return
+        elif not gender:
+            st.error("性別は必須です。")
+            return
+        # Supabase childmaster に追加
+        result = (
+            supabase.table("childmaster")
+            .insert({"user_id":user["user_id"], "name": name, "birth_date": birth_date, "gender": gender})
+            .execute()
+        )
 
-    # フォーム
-    st.session_state.new_child_name = st.text_input(
-        "子供の名前", st.session_state.new_child_name
-    )
-    st.session_state.new_child_birth = st.date_input(
-        "誕生日", st.session_state.new_child_birth
-    )
-    st.session_state.new_child_gender = st.radio(
-        "性別", ["男の子", "女の子", "選択しない"], index=["男の子","女の子","選択しない"].index(st.session_state.new_child_gender)
-    )
-
-    if st.button("登録する"):
-        if not st.session_state.new_child_name.strip():
-            st.error("子供の名前は必須です。")
-        else:
-            # DB登録
-            result = supabase.table("childmaster").insert({
-                "user_id": user["user_id"],
-                "name": st.session_state.new_child_name,
-                "birth_date": st.session_state.new_child_birth.isoformat(),
-                "gender": st.session_state.new_child_gender
-            }).execute()
-
-            if result.error:
-                st.error(f"登録に失敗しました: {result.error.message}")
-            else:
-                st.success("お子さんを登録しました！")
-
-                # フォームをリセット
-                st.session_state.new_child_name = ""
-                st.session_state.new_child_birth = date.today()
-                st.session_state.new_child_gender = "選択しない"
-
-                # 子どもリストを再読み込み
-                st.session_state.child_refresh = True
-                st.experimental_rerun()  # ページをリロードしてプルダウンを即更新
+        st.success("お子さんの情報を登録しました。")
