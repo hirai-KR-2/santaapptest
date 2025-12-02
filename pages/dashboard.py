@@ -30,7 +30,7 @@ def registration_dialog():
         # Supabase childmaster に追加
         result = (
             supabase.table("childmaster")
-            .insert({"user_id":user["user_id"], "name": name, "birth_date": birth_date, "gender": gender})
+            .insert({"user_id":user["user_id"], "name": name, "birth_date": birth_date.isoformat(), "gender": gender})
             .execute()
         )
 
