@@ -17,15 +17,15 @@ def registration_dialog():
     birth_date = st.date_input("生年月日")
     gender = st.selectbox("性別" ,("男の子","女の子","選択しない"))
 
-    if st.button("アカウント作成"):
+    if st.button("登録"):
         if not name.strip():
             st.error("お名前は必須です。")
             return
-        elif not birth_date.strip():
+        elif not birth_date is None:
             st.error("生年月日は必須です。")
             return
-        elif not gender:
-            st.error("性別は必須です。")
+        elif not gender.strip():
+            st.error("性別を選択してください。")
             return
         # Supabase childmaster に追加
         result = (
