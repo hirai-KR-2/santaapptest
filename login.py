@@ -12,6 +12,13 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 #　ダイアログ定義
 #　ログインダイアログ
 
+st.set_page_config(initial_sidebar_state="collapsed")
+st.markdown("""
+<style>
+[data-testid="stSidebar"] { display: none; }
+</style>
+""", unsafe_allow_html=True)
+
 @st.dialog("ログイン")
 def login_dialog():
     mail_address = st.text_input("メールアドレス")
