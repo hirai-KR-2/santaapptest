@@ -44,17 +44,16 @@ selected_child = st.sidebar.selectbox(
 
 # 新規登録ボタン
 if st.sidebar.button("新しいお子さんを登録する"):
-    dialog = st.dialog("お子さんの新規登録")  # ← context managerではなく変数に代入
+    st.dialog("お子さんの新規登録")  # ダイアログを開く
 
-    child_name = dialog.text_input("子供の名前")
-    birth_date = dialog.date_input("誕生日")
-    gender = dialog.radio("性別", ["男の子", "女の子", "選択しない"])
+    child_name = st.text_input("子供の名前")
+    birth_date = st.date_input("誕生日")
+    gender = st.radio("性別", ["男の子", "女の子", "選択しない"])
 
-    if dialog.button("登録する"):
+    if st.button("登録する"):
         if not child_name.strip():
             st.error("子供の名前は必須です。")
         else:
-            # DBへ登録
             result = supabase.table("childmaster").insert({
                 "user_id": user["user_id"],
                 "name": child_name,
