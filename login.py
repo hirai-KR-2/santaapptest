@@ -29,7 +29,7 @@ def login_dialog():
         if result.data:
             st.session_state.user = result.data[0]  # ログイン成功
             st.success("ログイン成功")
-            st.switch_page("dashboard") # 未作成
+            st.switch_page("pages/dashboard.py")
         else:
             st.error("メールアドレスまたはパスワードが正しくありません。")
 
