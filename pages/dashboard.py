@@ -58,7 +58,11 @@ def load_children():
     )
     return res.data or []
 
+if "childmaster" not in st.session_state:
+    st.session_state.childmaster = load_children()
+
 child_names = [child["name"] for child in st.session_state.childmaster]
+
 
 # プルダウン
 selected_child = st.sidebar.selectbox(
@@ -67,4 +71,3 @@ selected_child = st.sidebar.selectbox(
 )
 if st.sidebar.button("お子さんを登録する"):
     registration_dialog()
-
